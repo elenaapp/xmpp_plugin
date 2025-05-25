@@ -115,35 +115,6 @@ class XMPPController : NSObject {
 
         APP_DELEGATE.objXMPPConnStatus = .Disconnect
     }
-
-    func logout() {
-      print("🚪 [XMPPController] logout() called")
-     if xmppStream.isConnected {
-        self.disconnect(withStrem: xmppStream)
-      }
-
-      if xmppStream.isConnected {
-          self.changeStatus(.Offline, withXMPPStrem: xmppStream)
-          xmppStream.disconnect()
-      }
-
-      xmppStream.removeDelegate(self)
-      xmppReconnect?.deactivate()
-      xmppReconnect = nil
-
-      xmppRoster?.deactivate()
-      xmppRoster = nil
-      xmppRosterStorage = nil
-
-      xmppLastActivity.deactivate()
-      xmppMAM?.deactivate()
-      xmppMAM = nil
-      xmppRoom = nil
-
-      APP_DELEGATE.objXMPPConnStatus = .Disconnect
-      print("✅ Logout completo")
-}
-
     
     func restart() {
         self.xmppStream.disconnect()
