@@ -231,16 +231,55 @@ public class FlutterXmppPlugin: NSObject, FlutterPlugin {
         return true
     }
     
-    func performLogoutActivity(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        var dicData : [String : Any] = [:]
-        if let dic = call.arguments as? [String : Any] {
-            dicData = dic
-        }
-        let vMethod : String = call.method.trim()
-        printLog("\(#function) | \(vMethod) | arguments: \(dicData)")
-        self.objXMPP.disconnect(withStrem: self.objXMPP.xmppStream)
+     
+//     func performLogoutActivity(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+//         var dicData : [String : Any] = [:]
+//         if let dic = call.arguments as? [String : Any] {
+//             dicData = dic
+//         }
+//         let vMethod : String = call.method.trim()
+//         printLog("\(#function) | \(vMethod) | arguments: \(dicData)")
+//         self.objXMPP.disconnect(withStrem: self.objXMPP.xmppStream)
+//     }
+//
+
+func performLogoutActivity(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+    let vMethod : String = call.method.trim()
+    printLog("\(#function) | \(vMethod) | Logout called from Flutter")
+
+    APP_DELEGATE.objXMPP.logout()
+    result(xmppConstants.SUCCESS)
+}
+
+@objc func logout() {
+    print("🚪 [XMPPController] logout() called")
+
+    if xmppStream.isConnected {
+        self.changeStatus(.Offline, withXMPPStrem: xmppStream)
+        xmppStream.disconnect()
     }
-    
+
+    xmppStream.removeDelegate(self)
+    xmppReconnect?.deactivate()
+    xmppReconnect = nil
+
+    xmppRoster?.deactivate()
+    xmppRoster = nil
+    xmppRosterStorage = nil
+
+    xmppLastActivity.deactivate()
+
+    xmppMAM?.deactivate()
+    xmppMAM = nil
+
+    xmppRoom = nil
+    xmppStream = XMPPStream() // Reset
+
+    APP_DELEGATE.objXMPPConnStatus = .Disconnect
+    print("✅ Logout completo")
+}
+
+
     func performSendMessageActivity(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let vData = call.arguments as? [String : Any] else {
             result(xmppConstants.ERROR)
