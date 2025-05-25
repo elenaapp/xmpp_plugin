@@ -118,6 +118,9 @@ class XMPPController : NSObject {
 
     func logout() {
       print("🚪 [XMPPController] logout() called")
+     if xmppStream.isConnected {
+        self.disconnect(withStrem: xmppStream)
+      }
 
       if xmppStream.isConnected {
           self.changeStatus(.Offline, withXMPPStrem: xmppStream)
